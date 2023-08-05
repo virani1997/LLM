@@ -1,0 +1,95 @@
+---
+title: "LLMs (Appendix)"
+author: "Salman and Farhan"
+date: "2023-07-14"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libraries and Loading Data
+
+```{r}
+library(readr)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(RColorBrewer)
+
+data <- read_csv("C:/Users/Salman/Downloads/AI.csv")
+```
+
+# Data Wranlging
+
+```{r}
+
+colnames(data) <- c("time", "age", "gender", "education", "AI_freq", 
+                    "which_AI_used", "which_AI_prefer", "which_AI_helpful",
+                    "bard_or_gpt", "gpt_or_bard", "room_improv"
+                    )
+
+data <- data %>%
+  select(-1,-6)
+
+data[, 1:9] <- lapply(data[, 1:9], factor)
+
+summary(data)
+str(data)
+```
+
+# Exploratory Analysis
+
+```{r}
+prop.table(table(data$age))
+
+prop.table(table(data$gender))
+
+prop.table(table(data$education))
+
+prop.table(table(data$AI_freq))
+
+prop.table(table(data$which_AI_prefer))
+
+prop.table(table(data$bard_or_gpt))
+
+prop.table(table(data$gpt_or_bard))
+
+prop.table(table(data$room_improv))
+```
+
+```{r}
+ggplot(data, aes(education)) +
+  geom_bar(fill = "#1F77B4")
+
+ggplot(data, aes(gender)) +
+  geom_bar(fill = "#1F77B4")
+
+ggplot(data, aes(which_AI_prefer)) +
+         geom_bar(fill = "#1F77B4") +
+  labs(y = "Frequency", x = "LLM Model") +
+  theme_classic()
+
+colors <- brewer.pal(4, "Set2")
+colors[1] <- "#1F77B4"
+
+ggplot(data, aes(education, fill = AI_freq)) +
+  geom_bar() +
+  theme_classic() +
+  labs(x = "Education", y = "Frequency",
+       fill = "Frequency") +
+  scale_fill_manual(values = colors)
+
+ggplot(data, aes(room_improv, fill = factor(which_AI_prefer, 
+                                            levels = c("GPT 3/ GPT 4",
+                                                       "Google BARD" 
+                                                       )))) +
+  geom_bar() +
+  theme_classic() +
+  labs(x = "Room for Improvement", y = "Frequency",
+       fill = "Model Preference") +
+  scale_fill_manual(values = colors)
+```
